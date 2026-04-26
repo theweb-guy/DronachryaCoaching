@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Dronacharya Coaching Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    html { font-size: 16px; }
+    body { background: #fff; color: #1a1a1a; overflow-x: hidden; }
+    
+    /* Header */
+    .header { 
+      position: sticky; top: 0; background: #fff; z-index: 1000; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+      padding: clamp(10px, 2vw, 16px) clamp(16px, 4vw, 32px); 
+      display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo-wrap { display: flex; align-items: center; gap: clamp(8px, 1.5vw, 12px); }
+    .logo-wrap img { width: clamp(32px, 5vw, 45px); height: clamp(32px, 5vw, 45px); border-radius: 50%; }
+    .logo-wrap h1 { font-size: clamp(16px, 2.5vw, 20px); font-weight: 600; }
+    .menu-icon { font-size: clamp(22px, 3vw, 26px); cursor: pointer; }
+    
+    /* Hero */
+    .hero { 
+      background: #0a0e1a url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><path d="M0 300L50 325L100 300L150 275L200 300L250 325L300 300" stroke="%231a2b4d" fill="none" opacity="0.3"/></svg>'); 
+      background-size: cover; color: #fff; text-align: center; 
+      padding: clamp(50px, 10vw, 100px) clamp(16px, 4vw, 32px); 
+    }
+    .hero h2 { font-size: clamp(28px, 6vw, 52px); color: #ff9500; font-weight: 700; margin-bottom: clamp(12px, 2vw, 20px); }
+    .hero p { font-size: clamp(14px, 2.2vw, 20px); margin-bottom: clamp(20px, 4vw, 35px); opacity: 0.9; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .btn { 
+      background: transparent; color: #fff; border: 2px solid #fff; 
+      padding: clamp(10px, 1.5vw, 14px) clamp(24px, 4vw, 36px); 
+      border-radius: 30px; font-size: clamp(14px, 2vw, 16px); 
+      cursor: pointer; transition: 0.3s; 
+    }
+    .btn:hover { background: #fff; color: #0a0e1a; }
+    
+    /* Sections */
+    .section { padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px); max-width: 1400px; margin: 0 auto; }
+    .section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); margin-bottom: clamp(30px, 5vw, 50px); font-weight: 700; }
+    
+    /* Achievements Gallery */
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 3vw, 28px); }
+    .student-card { 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+      border-radius: clamp(16px, 2vw, 24px); padding: 0; color: #fff; text-align: center; 
+      overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .student-card img { width: 100%; height: auto; display: block; }
+    
+    /* Experts/Teachers - Fully Responsive Carousel */
+    .teachers-wrapper { 
+      position: relative; 
+      padding: clamp(20px, 4vw, 50px) 0; 
+      overflow: hidden;
+    }
+    .teachers { 
+      display: flex; 
+      gap: clamp(12px, 2.5vw, 24px); 
+      overflow-x: auto; 
+      scroll-snap-type: x mandatory; 
+      scroll-behavior: smooth;
+      padding: clamp(15px, 3vw, 25px) clamp(30px, 8vw, 80px);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .teachers::-webkit-scrollbar { display: none; }
+    .teacher-card { 
+      flex: 0 0 clamp(240px, 30vw, 320px);
+      background: #fff; 
+      border-radius: clamp(16px, 2vw, 24px); 
+      overflow: hidden; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: 0.4s;
+      scroll-snap-align: center;
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+    .teacher-card.active { 
+      transform: scale(1.05); 
+      opacity: 1;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+    .teacher-card img { 
+      width: 100%; height: clamp(260px, 35vw, 360px); object-fit: cover; display: block;
+    }
+    .teacher-info { padding: clamp(16px, 2.5vw, 24px); text-align: center; }
+    .teacher-card h3 { font-size: clamp(18px, 2.5vw, 22px); font-weight: 700; margin-bottom: 6px; color: #1a1a1a; }
+    .teacher-card p { color: #d63384; font-size: clamp(14px, 1.8vw, 16px); font-weight: 500; }
+    
+    /* Carousel Controls */
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: #ff9500; color: #fff; border: none;
+      width: clamp(38px, 5vw, 50px); height: clamp(38px, 5vw, 50px); border-radius: 50%;
+      font-size: clamp(16px, 2.5vw, 22px); cursor: pointer; z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+    }
+    .carousel-btn:hover { background: #e88500; }
+    .carousel-prev { left: clamp(5px, 1.5vw, 15px); }
+    .carousel-next { right: clamp(5px, 1.5vw, 15px); }
+    
+    /* Forms */
+    .form-box { background: #f8f9fa; padding: clamp(20px, 4vw, 35px); border-radius: clamp(12px, 2vw, 18px); margin: 20px 0; }
+    .form-box h3 { font-size: clamp(18px, 2.5vw, 22px); margin-bottom: 16px; }
+    .form-box input, .form-box textarea, .form-box select { 
+      width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #ddd; 
+      border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); 
+    }
+    .form-box button { 
+      background: #ff9500; color: #fff; border: none; 
+      padding: clamp(10px, 1.5vw, 14px) clamp(24px, 4vw, 36px); 
+      border-radius: 8px; cursor: pointer; font-size: clamp(14px, 1.8vw, 16px); font-weight: 600; 
+    }
+    
+    /* Feedback Display */
+    .feedback-item { 
+      background: #fff; padding: clamp(16px, 2.5vw, 24px); border-radius: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 16px 0; 
+    }
+    .feedback-item h4 { color: #1e3c72; margin-bottom: 8px; font-size: clamp(16px, 2vw, 18px); }
+    .feedback-item p { font-size: clamp(14px, 1.8vw, 16px); }
+    
+    /* Floating Social Buttons */
+    .social-float { 
+      position: fixed; right: clamp(10px, 2vw, 20px); top: 50%; transform: translateY(-50%); 
+      display: flex; flex-direction: column; gap: clamp(10px, 1.5vw, 14px); z-index: 999; 
+    }
+    .social-btn { 
+      width: clamp(42px, 6vw, 52px); height: clamp(42px, 6vw, 52px); border-radius: 50%; display: flex; 
+      align-items: center; justify-content: center; color: #fff; 
+      font-size: clamp(18px, 2.5vw, 24px); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+      transition: 0.3s; 
+    }
+    .social-btn:hover { transform: scale(1.1); }
+    .whatsapp { background: #25D366; }
+    .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .facebook { background: #1877F2; }
+    .call { background: #34b7f1; }
+    
+    /* Admin Panel */
+    #adminPanel { display: none; }
+    .admin-controls { padding: 0 clamp(16px, 2.5vw, 24px) clamp(16px, 2.5vw, 24px); }
+    .admin-controls button { 
+      background: #dc3545; color: #fff; border: none; padding: clamp(8px, 1.2vw, 10px) clamp(14px, 2vw, 18px); 
+      border-radius: 6px; cursor: pointer; width: 100%; font-size: clamp(14px, 1.8vw, 16px);
+    }
+    
+    /* Extra Small Devices */
+    @media (max-width: 480px) {
+      .teacher-card { flex: 0 0 85vw; }
+      .teachers { padding: 15px 20px; }
+    }
+    
+    /* Large Desktop */
+    @media (min-width: 1440px) {
+      .section { max-width: 1600px; }
+      .teacher-card { flex: 0 0 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Dronacharya Coaching Center">
+      <h1>Dronacharya coaching center</h1>
+    </div>
+    <div class="menu-icon" onclick="toggleAdmin()"><i class="fas fa-bars"></i></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h2>Dronacharya Center</h2>
+    <p>Excellence in Education for Aspiring Minds in Kabisuryanagar.</p>
+    <button class="btn" onclick="document.getElementById('enroll').scrollIntoView({behavior:'smooth'})">Get Started</button>
+  </div>
+
+  <!-- Achievements Gallery -->
+  <div class="section">
+    <h2>Our Achievements Gallery</h2>
+    <div class="gallery">
+      <div class="student-card">
+        <img src="student1.jpg" alt="SANDHYARANI PRADHAN - 97.5%">
+      </div>
+      <div class="student-card">
+        <img src="student2.jpg" alt="CBSE Topper - 95.7%">
+      </div>
+    </div>
+  </div>
+
+  <!-- Our Experts - Responsive Carousel -->
+  <div class="section">
+    <h2>Our Experts</h2>
+    <div class="teachers-wrapper">
+      <button class="carousel-btn carousel-prev" onclick="scrollTeachers(-1)"><i class="fas fa-chevron-left"></i></button>
+      <div class="teachers" id="teachersList"></div>
+      <button class="carousel-btn carousel-next" onclick="scrollTeachers(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="section" id="adminPanel">
+    <h2>Admin Panel - Manage Teachers</h2>
+    <div class="form-box">
+      <h3>Add New Teacher</h3>
+      <input type="text" id="teacherName" placeholder="Teacher Name">
+      <input type="text" id="teacherRole" placeholder="Role/Subject">
+      <input type="text" id="teacherImg" placeholder="Image filename: math1.png">
+      <button onclick="addTeacher()">Add Teacher</button>
+    </div>
+  </div>
+
+  <!-- Student Feedback -->
+  <div class="section">
+    <h2>Student Feedback</h2>
+    <div class="form-box">
+      <h3>Share Your Experience</h3>
+      <input type="text" id="fbName" placeholder="Your Name">
+      <textarea id="fbText" rows="4" placeholder="Your feedback..."></textarea>
+      <button onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+    <div id="feedbackList"></div>
+  </div>
+
+  <!-- Enroll -->
+  <div class="section" id="enroll">
+    <h2>Enroll Now</h2>
+    <div class="form-box">
+      <input type="text" id="enrollName" placeholder="Student Name">
+      <input type="text" id="enrollPhone" placeholder="Phone Number">
+      <select id="enrollClass">
+        <option>Class 8</option><option>Class 9</option><option>Class 10</option>
+        <option>Class 11</option><option>Class 12</option>
+      </select>
+      <button onclick="submitEnroll()">Submit Enrollment</button>
+    </div>
+  </div>
+
+  <!-- Floating Social Buttons -->
+  <div class="social-float">
+    <div class="social-btn whatsapp" onclick="window.open('https://wa.me/918594983310')"><i class="fab fa-whatsapp"></i></div>
+    <div class="social-btn instagram" onclick="window.open('https://www.instagram.com/dronacharyacoachingcenter_ksn?igsh=MTdteHdtYXBxZzV1OA==')"><i class="fab fa-instagram"></i></div>
+    <div class="social-btn facebook" onclick="window.open('https://facebook.com/YOUR_PAGE')"><i class="fab fa-facebook-f"></i></div>
+    <div class="social-btn call" onclick="window.location.href='tel:+918594983310'"><i class="fas fa-phone"></i></div>
+  </div>
+
+  <script>
+    // Teachers data
+    let teachers = [
+      { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
+      { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
+      { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
+      { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
+      { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
+      { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
+      { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
+      { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
+      { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" }
+    ];
+
+    let feedbacks = [];
+    let isAdmin = false;
+    let currentIndex = 0;
+
+    function renderTeachers() {
+      const list = document.getElementById('teachersList');
+      list.innerHTML = '';
+      teachers.forEach((t, i) => {
+        list.innerHTML += `
+          <div class="teacher-card" data-index="${i}">
+            <img src="${t.img}" alt="${t.name}">
+            <div class="teacher-info">
+              <h3>${t.name}</h3>
+              <p>${t.role}</p>
+            </div>
+            ${isAdmin ? `<div class="admin-controls"><button onclick="removeTeacher(${i})">Remove</button></div>` : ''}
+          </div>`;
+      });
+      updateActiveCard();
+    }
+
+    function updateActiveCard() {
+      const cards = document.querySelectorAll('.teacher-card');
+      const container = document.getElementById('teachersList');
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+      
+      cards.forEach((card, i) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distance = Math.abs(containerCenter - cardCenter);
+        
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = i;
+        }
+        card.classList.remove('active');
+      });
+      
+      if (cards[closestIndex]) {
+        cards[closestIndex].classList.add('active');
+        currentIndex = closestIndex;
+      }
+    }
+
+    function scrollTeachers(direction) {
+      const container = document.getElementById('teachersList');
+      const card = container.querySelector('.teacher-card');
+      if (!card) return;
+      const cardWidth = card.offsetWidth + parseInt(getComputedStyle(card).marginRight || 20);
+      container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+      setTimeout(updateActiveCard, 300);
+    }
+
+    // Auto-update center card on scroll
+    document.getElementById('teachersList').addEventListener('scroll', () => {
+      clearTimeout(window.scrollEndTimer);
+      window.scrollEndTimer = setTimeout(updateActiveCard, 100);
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      clearTimeout(window.resizeTimer);
+      window.resizeTimer = setTimeout(updateActiveCard, 250);
+    });
+
+    function addTeacher() {
+      const name = document.getElementById('teacherName').value;
+      const role = document.getElementById('teacherRole').value;
+      const img = document.getElementById('teacherImg').value;
+      if(name && role && img) {
+        teachers.push({name, role, img});
+        renderTeachers();
+        document.getElementById('teacherName').value = '';
+        document.getElementById('teacherRole').value = '';
+        document.getElementById('teacherImg').value = '';
+        alert('Teacher added!');
+      }
+    }
+
+    function removeTeacher(i) {
+      if(confirm('Remove this teacher?')) {
+        teachers.splice(i, 1);
+        renderTeachers();
+      }
+    }
+
+    function toggleAdmin() {
+      if(!isAdmin) {
+        const pass = prompt('Enter admin password:');
+        if(pass === 'dronacharya123') {
+          isAdmin = true;
+          document.getElementById('adminPanel').style.display = 'block';
+          renderTeachers();
+          alert('Admin mode activated');
+        } else if(pass) {
+          alert('Wrong password');
+        }
+      }
+    }
+
+    function submitFeedback() {
+      const name = document.getElementById('fbName').value;
+      const text = document.getElementById('fbText').value;
+      if(name && text) {
+        feedbacks.unshift({name, text});
+        renderFeedback();
+        document.getElementById('fbName').value = '';
+        document.getElementById('fbText').value = '';
+        alert('Thanks for your feedback!');
+      }
+    }
+
+    function renderFeedback() {
+      const list = document.getElementById('feedbackList');
+      list.innerHTML = feedbacks.map(f => `
+        <div class="feedback-item">
+          <h4>${f.name}</h4>
+          <p>${f.text}</p>
+        </div>
+      `).join('');
+    }
+
+    function submitEnroll() {
+      const name = document.getElementById('enrollName').value;
+      const phone = document.getElementById('enrollPhone').value;
+      const cls = document.getElementById('enrollClass').value;
+      if(name && phone) {
+        alert(`Thanks ${name}! We will contact you at ${phone} for ${cls} enrollment.`);
+        document.getElementById('enrollName').value = '';
+        document.getElementById('enrollPhone').value = '';
+      }
+    }
+
+    // Init
+    renderTeachers();
+    renderFeedback();
+    setTimeout(updateActiveCard, 100);
+  </script>
+</body>
+</html>
