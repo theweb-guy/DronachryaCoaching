@@ -52,7 +52,7 @@
     }
     .student-card img { width: 100%; height: auto; display: block; }
     
-    /* Experts/Teachers - Fully Responsive Carousel */
+    /* Experts/Teachers - Swipe + Button Carousel */
     .teachers-wrapper { 
       position: relative; 
       padding: clamp(20px, 4vw, 50px) 0; 
@@ -64,10 +64,12 @@
       overflow-x: auto; 
       scroll-snap-type: x mandatory; 
       scroll-behavior: smooth;
-      padding: clamp(15px, 3vw, 25px) clamp(30px, 8vw, 80px);
+      padding: clamp(20px, 4vw, 30px) clamp(30px, 8vw, 80px);
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
+      cursor: grab;
     }
+    .teachers:active { cursor: grabbing; }
     .teachers::-webkit-scrollbar { display: none; }
     .teacher-card { 
       flex: 0 0 clamp(240px, 30vw, 320px);
@@ -75,34 +77,43 @@
       border-radius: clamp(16px, 2vw, 24px); 
       overflow: hidden; 
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      transition: 0.4s;
+      transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
       scroll-snap-align: center;
-      transform: scale(0.9);
-      opacity: 0.7;
+      transform: scale(0.85);
+      opacity: 0.6;
+      user-select: none;
     }
     .teacher-card.active { 
-      transform: scale(1.05); 
+      transform: scale(1.08); 
       opacity: 1;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+      z-index: 2;
     }
     .teacher-card img { 
       width: 100%; height: clamp(260px, 35vw, 360px); object-fit: cover; display: block;
+      pointer-events: none;
     }
     .teacher-info { padding: clamp(16px, 2.5vw, 24px); text-align: center; }
     .teacher-card h3 { font-size: clamp(18px, 2.5vw, 22px); font-weight: 700; margin-bottom: 6px; color: #1a1a1a; }
     .teacher-card p { color: #d63384; font-size: clamp(14px, 1.8vw, 16px); font-weight: 500; }
     
-    /* Carousel Controls */
+    /* Carousel Controls - Show on desktop, hide on touch devices */
     .carousel-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
       background: #ff9500; color: #fff; border: none;
       width: clamp(38px, 5vw, 50px); height: clamp(38px, 5vw, 50px); border-radius: 50%;
       font-size: clamp(16px, 2.5vw, 22px); cursor: pointer; z-index: 10;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+      transition: 0.3s;
     }
-    .carousel-btn:hover { background: #e88500; }
+    .carousel-btn:hover { background: #e88500; transform: translateY(-50%) scale(1.1); }
+    .carousel-btn:active { transform: translateY(-50%) scale(0.95); }
     .carousel-prev { left: clamp(5px, 1.5vw, 15px); }
     .carousel-next { right: clamp(5px, 1.5vw, 15px); }
+    
+    @media (hover: none) and (pointer: coarse) {
+      .carousel-btn { display: none; }
+    }
     
     /* Forms */
     .form-box { background: #f8f9fa; padding: clamp(20px, 4vw, 35px); border-radius: clamp(12px, 2vw, 18px); margin: 20px 0; }
@@ -152,8 +163,8 @@
     
     /* Extra Small Devices */
     @media (max-width: 480px) {
-      .teacher-card { flex: 0 0 85vw; }
-      .teachers { padding: 15px 20px; }
+      .teacher-card { flex: 0 0 80vw; }
+      .teachers { padding: 15px 15px; }
     }
     
     /* Large Desktop */
@@ -194,7 +205,7 @@
     </div>
   </div>
 
-  <!-- Our Experts - Responsive Carousel -->
+  <!-- Our Experts - Swipe + Button Carousel -->
   <div class="section">
     <h2>Our Experts</h2>
     <div class="teachers-wrapper">
@@ -266,7 +277,8 @@
 
     let feedbacks = [];
     let isAdmin = false;
-    let currentIndex = 0;
+    let isDragging = false;
+    let startX, scrollLeft;
 
     function renderTeachers() {
       const list = document.getElementById('teachersList');
@@ -282,7 +294,7 @@
             ${isAdmin ? `<div class="admin-controls"><button onclick="removeTeacher(${i})">Remove</button></div>` : ''}
           </div>`;
       });
-      updateActiveCard();
+      setTimeout(updateActiveCard, 50);
     }
 
     function updateActiveCard() {
@@ -308,7 +320,6 @@
       
       if (cards[closestIndex]) {
         cards[closestIndex].classList.add('active');
-        currentIndex = closestIndex;
       }
     }
 
@@ -318,13 +329,49 @@
       if (!card) return;
       const cardWidth = card.offsetWidth + parseInt(getComputedStyle(card).marginRight || 20);
       container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
-      setTimeout(updateActiveCard, 300);
     }
 
-    // Auto-update center card on scroll
-    document.getElementById('teachersList').addEventListener('scroll', () => {
-      clearTimeout(window.scrollEndTimer);
-      window.scrollEndTimer = setTimeout(updateActiveCard, 100);
+    // Real-time center detection during scroll
+    const teachersContainer = document.getElementById('teachersList');
+    teachersContainer.addEventListener('scroll', () => {
+      window.requestAnimationFrame(updateActiveCard);
+    });
+
+    // Mouse drag for desktop
+    teachersContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.pageX - teachersContainer.offsetLeft;
+      scrollLeft = teachersContainer.scrollLeft;
+      teachersContainer.style.scrollBehavior = 'auto';
+    });
+
+    teachersContainer.addEventListener('mouseleave', () => {
+      isDragging = false;
+      teachersContainer.style.scrollBehavior = 'smooth';
+    });
+
+    teachersContainer.addEventListener('mouseup', () => {
+      isDragging = false;
+      teachersContainer.style.scrollBehavior = 'smooth';
+      setTimeout(updateActiveCard, 100);
+    });
+
+    teachersContainer.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - teachersContainer.offsetLeft;
+      const walk = (x - startX) * 2;
+      teachersContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // Touch events for mobile
+    teachersContainer.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].pageX - teachersContainer.offsetLeft;
+      scrollLeft = teachersContainer.scrollLeft;
+    });
+
+    teachersContainer.addEventListener('touchend', () => {
+      setTimeout(updateActiveCard, 100);
     });
 
     // Handle window resize
@@ -404,7 +451,6 @@
     // Init
     renderTeachers();
     renderFeedback();
-    setTimeout(updateActiveCard, 100);
   </script>
 </body>
 </html>
