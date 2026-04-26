@@ -43,14 +43,37 @@
    .section { padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px); max-width: 1400px; margin: 0 auto; }
    .section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); margin-bottom: clamp(30px, 5vw, 50px); font-weight: 700; }
     
-    /* Achievements Gallery */
-   .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 3vw, 28px); }
-   .student-card { 
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
-      border-radius: clamp(16px, 2vw, 24px); padding: 0; color: #fff; text-align: center; 
-      overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    /* Achievements Gallery - Now Smooth Carousel */
+   .gallery-wrapper { 
+      position: relative; 
+      padding: clamp(40px, 6vw, 80px) 0; 
+      overflow: hidden;
     }
-   .student-card img { width: 100%; height: auto; display: block; }
+   .gallery { 
+      display: flex; 
+      gap: clamp(20px, 3.5vw, 32px); 
+      overflow-x: auto; 
+      scroll-behavior: auto;
+      padding: clamp(40px, 6vw, 60px) clamp(50px, 12vw, 150px);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+      will-change: scroll-position;
+    }
+   .gallery:active { cursor: grabbing; }
+   .gallery::-webkit-scrollbar { display: none; }
+   .student-card { 
+      flex: 0 0 clamp(280px, 35vw, 380px);
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+      border-radius: clamp(20px, 2.5vw, 28px); padding: 0; color: #fff; text-align: center; 
+      overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: none;
+      user-select: none;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+   .student-card img { width: 100%; height: auto; display: block; pointer-events: none; }
     
     /* Experts/Teachers - Continuous Smooth Carousel */
    .teachers-wrapper { 
@@ -157,14 +180,14 @@
     
     /* Extra Small Devices */
     @media (max-width: 480px) {
-     .teacher-card { flex: 0 0 75vw; }
-     .teachers { padding: 30px 20px; }
+     .teacher-card, .student-card { flex: 0 0 75vw; }
+     .teachers, .gallery { padding: 30px 20px; }
     }
     
     /* Large Desktop */
     @media (min-width: 1440px) {
      .section { max-width: 1600px; }
-     .teacher-card { flex: 0 0 400px; }
+     .teacher-card, .student-card { flex: 0 0 400px; }
     }
   </style>
 </head>
@@ -186,16 +209,29 @@
     <button class="btn" onclick="document.getElementById('enroll').scrollIntoView({behavior:'smooth'})">Get Started</button>
   </div>
 
-  <!-- Achievements Gallery -->
+  <!-- Achievements Gallery - Now Smooth Carousel -->
   <div class="section">
     <h2>Our Achievements Gallery</h2>
-    <div class="gallery">
-      <div class="student-card">
-        <img src="student1.jpg" alt="SANDHYARANI PRADHAN - 97.5%">
+    <div class="gallery-wrapper">
+      <button class="carousel-btn carousel-prev" onclick="scrollGallery(-1)"><i class="fas fa-chevron-left"></i></button>
+      <div class="gallery" id="galleryList">
+        <div class="student-card">
+          <img src="success.png" alt="Achievement">
+        </div>
+        <div class="student-card">
+          <img src="3d.png" alt="Achievement">
+        </div>
+        <div class="student-card">
+          <img src="4d.png" alt="Achievement">
+        </div>
+        <div class="student-card">
+          <img src="ggg1.png" alt="Achievement">
+        </div>
+        <div class="student-card">
+          <img src="ggg2.png" alt="Achievement">
+        </div>
       </div>
-      <div class="student-card">
-        <img src="student2.jpg" alt="CBSE Topper - 95.7%">
-      </div>
+      <button class="carousel-btn carousel-next" onclick="scrollGallery(1)"><i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
 
@@ -271,7 +307,8 @@
 
     let feedbacks = [];
     let isAdmin = false;
-    let ticking = false;
+    let tickingTeachers = false;
+    let tickingGallery = false;
 
     function renderTeachers() {
       const list = document.getElementById('teachersList');
@@ -287,12 +324,15 @@
             ${isAdmin? `<div class="admin-controls"><button onclick="removeTeacher(${i})">Remove</button></div>` : ''}
           </div>`;
       });
-      setTimeout(updateScale, 50);
+      setTimeout(() => {
+        updateScale('teachers');
+        updateScale('gallery');
+      }, 50);
     }
 
-    function updateScale() {
-      const cards = document.querySelectorAll('.teacher-card');
-      const container = document.getElementById('teachersList');
+    function updateScale(containerId) {
+      const container = document.getElementById(containerId === 'teachers' ? 'teachersList' : 'galleryList');
+      const cards = container.querySelectorAll(containerId === 'teachers' ? '.teacher-card' : '.student-card');
       if (!cards.length) return;
       
       const containerRect = container.getBoundingClientRect();
@@ -303,11 +343,9 @@
         const cardCenter = cardRect.left + cardRect.width / 2;
         const distance = Math.abs(containerCenter - cardCenter);
         
-        // Smooth continuous scaling based on distance from center
         const maxDistance = containerRect.width * 0.6;
         const normalizedDistance = Math.min(distance / maxDistance, 1);
         
-        // Exponential ease for smoother falloff
         const easedDistance = normalizedDistance * normalizedDistance;
         
         const scale = 1.18 - (easedDistance * 0.38);
@@ -320,13 +358,17 @@
         card.style.zIndex = Math.round((1 - normalizedDistance) * 10);
       });
       
-      ticking = false;
+      if (containerId === 'teachers') tickingTeachers = false;
+      else tickingGallery = false;
     }
 
-    function requestTick() {
-      if (!ticking) {
-        requestAnimationFrame(updateScale);
-        ticking = true;
+    function requestTick(containerId) {
+      if (containerId === 'teachers' && !tickingTeachers) {
+        requestAnimationFrame(() => updateScale('teachers'));
+        tickingTeachers = true;
+      } else if (containerId === 'gallery' && !tickingGallery) {
+        requestAnimationFrame(() => updateScale('gallery'));
+        tickingGallery = true;
       }
     }
 
@@ -339,92 +381,55 @@
       container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
     }
 
-    // Smooth continuous updates during scroll
-    const teachersContainer = document.getElementById('teachersList');
-    teachersContainer.addEventListener('scroll', requestTick, { passive: true });
-
-    // Mouse drag for desktop - momentum scrolling
-    let isDown = false;
-    let startX, scrollLeft, velocity = 0, lastX = 0, lastTime = 0;
-
-    teachersContainer.addEventListener('mousedown', (e) => {
-      isDown = true;
-      startX = e.pageX - teachersContainer.offsetLeft;
-      scrollLeft = teachersContainer.scrollLeft;
-      velocity = 0;
-      lastX = e.pageX;
-      lastTime = Date.now();
-    });
-
-    teachersContainer.addEventListener('mouseleave', () => {
-      if (isDown) {
-        isDown = false;
-        applyMomentum();
-      }
-    });
-
-    teachersContainer.addEventListener('mouseup', () => {
-      if (isDown) {
-        isDown = false;
-        applyMomentum();
-      }
-    });
-
-    teachersContainer.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - teachersContainer.offsetLeft;
-      const walk = (x - startX) * 2;
-      teachersContainer.scrollLeft = scrollLeft - walk;
-      
-      // Calculate velocity for momentum
-      const now = Date.now();
-      const dt = now - lastTime;
-      if (dt > 0) {
-        velocity = (e.pageX - lastX) / dt;
-      }
-      lastX = e.pageX;
-      lastTime = now;
-    });
-
-    function applyMomentum() {
-      if (Math.abs(velocity) > 0.1) {
-        teachersContainer.scrollLeft -= velocity * 15;
-        velocity *= 0.95;
-        requestAnimationFrame(applyMomentum);
-      }
+    function scrollGallery(direction) {
+      const container = document.getElementById('galleryList');
+      const card = container.querySelector('.student-card');
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(container).gap) || 32;
+      const cardWidth = card.offsetWidth + gap;
+      container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
     }
 
-    // Touch momentum
-    let touchStartX = 0;
-    let touchScrollLeft = 0;
+    // Smooth continuous updates during scroll
+    const teachersContainer = document.getElementById('teachersList');
+    const galleryContainer = document.getElementById('galleryList');
+    
+    teachersContainer.addEventListener('scroll', () => requestTick('teachers'), { passive: true });
+    galleryContainer.addEventListener('scroll', () => requestTick('gallery'), { passive: true });
 
-    teachersContainer.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].pageX - teachersContainer.offsetLeft;
-      touchScrollLeft = teachersContainer.scrollLeft;
-      velocity = 0;
-      lastX = e.touches[0].pageX;
-      lastTime = Date.now();
-    }, { passive: true });
+    // Mouse drag for desktop
+    function setupDragScroll(container) {
+      let isDown = false;
+      let startX, scrollLeft;
 
-    teachersContainer.addEventListener('touchmove', (e) => {
-      const now = Date.now();
-      const dt = now - lastTime;
-      if (dt > 0) {
-        velocity = (e.touches[0].pageX - lastX) / dt;
-      }
-      lastX = e.touches[0].pageX;
-      lastTime = now;
-    }, { passive: true });
+      container.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+      });
 
-    teachersContainer.addEventListener('touchend', () => {
-      applyMomentum();
-    });
+      container.addEventListener('mouseleave', () => { isDown = false; });
+      container.addEventListener('mouseup', () => { isDown = false; });
+
+      container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeft - walk;
+      });
+    }
+
+    setupDragScroll(teachersContainer);
+    setupDragScroll(galleryContainer);
 
     // Handle window resize
     window.addEventListener('resize', () => {
       clearTimeout(window.resizeTimer);
-      window.resizeTimer = setTimeout(updateScale, 150);
+      window.resizeTimer = setTimeout(() => {
+        updateScale('teachers');
+        updateScale('gallery');
+      }, 150);
     });
 
     function addTeacher() {
