@@ -48,14 +48,14 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 
 /* Sections */
 .section { padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px); max-width: 1400px; margin: 0 auto; }
-.section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); margin-bottom: clamp(30px, 5vw, 50px); font-weight: 800; color: #1e3a8a; }
+.section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); margin-bottom: clamp(20px, 3vw, 30px); font-weight: 800; color: #1e3a8a; }
 
-/* Achievements Gallery - FULL WIDTH VIDEO BG */
+/* Achievements Gallery - FULL WIDTH VIDEO BG - REDUCED PADDING */
 .achievements-container {
   position: relative;
   border-radius: 0;
   overflow: hidden;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
 }
@@ -71,7 +71,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 }
 .gallery-wrapper { 
   position: relative; 
-  padding: clamp(40px, 6vw, 80px) 0; 
+  padding: clamp(20px, 3vw, 40px) 0; 
   overflow: hidden;
   z-index: 2;
   max-width: 1400px;
@@ -82,7 +82,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   gap: clamp(16px, 3vw, 28px); 
   overflow-x: auto; 
   scroll-behavior: auto;
-  padding: clamp(30px, 5vw, 50px) clamp(50px, 12vw, 150px);
+  padding: clamp(20px, 3vw, 30px) clamp(50px, 12vw, 150px);
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
@@ -114,7 +114,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   border-radius: clamp(12px, 1.5vw, 16px);
 }
 
-/* Experts/Teachers - FULL WIDTH VIDEO BG */
+/* Experts/Teachers - FULL WIDTH VIDEO BG - REDUCED PADDING */
 .experts-container {
   position: relative;
   border-radius: 0;
@@ -134,7 +134,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 }
 .teachers-wrapper { 
   position: relative; 
-  padding: clamp(40px, 6vw, 80px) 0; 
+  padding: clamp(20px, 3vw, 40px) 0; 
   overflow: hidden;
   z-index: 2;
   max-width: 1400px;
@@ -145,7 +145,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   gap: clamp(16px, 3vw, 28px); 
   overflow-x: auto; 
   scroll-behavior: auto;
-  padding: clamp(30px, 5vw, 50px) clamp(50px, 12vw, 150px);
+  padding: clamp(20px, 3vw, 30px) clamp(50px, 12vw, 150px);
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
@@ -345,7 +345,6 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
           <div class="student-card" onclick="openLightbox('ggg2.png')">
             <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
           </div>
-        </div>
         <button class="carousel-btn carousel-next" onclick="scrollGallery(1)"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
