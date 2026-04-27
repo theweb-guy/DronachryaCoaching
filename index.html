@@ -414,6 +414,18 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
     <input type="text" id="enrollName" placeholder="Student Name" style="width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); color: #1f2937; font-family: 'Lato', sans-serif;">
     <input type="text" id="enrollPhone" placeholder="Phone Number" style="width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); color: #1f2937; font-family: 'Lato', sans-serif;">
     
+    <select id="enrollClass" style="width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); color: #1f2937; font-family: 'Lato', sans-serif;">
+      <option value="">Select Standard</option>
+      <option>Class 5</option>
+      <option>Class 6</option>
+      <option>Class 7</option>
+      <option>Class 8</option>
+      <option>Class 9</option>
+      <option>Class 10</option>
+      <option>Class 11</option>
+      <option>Class 12</option>
+    </select>
+    
     <h3 style="margin-top: 20px; font-size: clamp(18px, 2.5vw, 22px); margin-bottom: 16px; color: #1e3a8a; font-family: 'Montserrat', sans-serif;">Select Courses</h3>
     <div style="margin: 16px 0;">
       <div class="course-box" onclick="toggleCheck('course-educational')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
@@ -465,10 +477,16 @@ function toggleCheck(id) {
 function submitEnroll() {
   const name = document.getElementById('enrollName').value;
   const phone = document.getElementById('enrollPhone').value;
+  const cls = document.getElementById('enrollClass').value;
   const selected = document.querySelectorAll('input[type="checkbox"]:checked');
   
   if(!name || !phone) {
     alert('Please enter your name and phone number');
+    return;
+  }
+  
+  if(!cls) {
+    alert('Please select your standard');
     return;
   }
   
@@ -482,10 +500,11 @@ function submitEnroll() {
     courses.push(cb.dataset.name);
   });
   
-  alert(`Thanks ${name}!\nCourses: ${courses.join(', ')}\nWe will contact you at ${phone}.`);
+  alert(`Thanks ${name}!\nStandard: ${cls}\nCourses: ${courses.join(', ')}\nWe will contact you at ${phone}.`);
   
   document.getElementById('enrollName').value = '';
   document.getElementById('enrollPhone').value = '';
+  document.getElementById('enrollClass').value = '';
   selected.forEach(cb => {
     cb.checked = false;
     const box = cb.closest('.course-box');
