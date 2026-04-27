@@ -408,18 +408,92 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Enroll -->
-  <div class="section section-padding" id="enroll">
-    <h2>Enroll Now</h2>
-    <div class="form-box">
-      <input type="text" id="enrollName" placeholder="Student Name">
-      <input type="text" id="enrollPhone" placeholder="Phone Number">
-      <select id="enrollClass">
-        <option>Class 8</option><option>Class 9</option><option>Class 10</option>
-        <option>Class 11</option><option>Class 12</option>
-      </select>
-      <button onclick="submitEnroll()">Submit Enrollment</button>
+<div class="section section-padding" id="enroll" style="padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px); max-width: 1400px; margin: 0 auto;">
+  <h2 style="text-align: center; font-size: clamp(26px, 4.5vw, 40px); padding: 15px 0 8px 0; margin: 0; font-weight: 800; color: #1e3a8a; background: #fff; font-family: 'Montserrat', sans-serif;">Enroll Now</h2>
+  <div style="background: #f8f9fa; padding: clamp(20px, 4vw, 35px); border-radius: clamp(12px, 2vw, 18px); margin: 20px 0;">
+    <input type="text" id="enrollName" placeholder="Student Name" style="width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); color: #1f2937; font-family: 'Lato', sans-serif;">
+    <input type="text" id="enrollPhone" placeholder="Phone Number" style="width: 100%; padding: clamp(10px, 1.5vw, 14px); margin: 8px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: clamp(14px, 1.8vw, 16px); color: #1f2937; font-family: 'Lato', sans-serif;">
+    
+    <h3 style="margin-top: 20px; font-size: clamp(18px, 2.5vw, 22px); margin-bottom: 16px; color: #1e3a8a; font-family: 'Montserrat', sans-serif;">Select Courses</h3>
+    <div style="margin: 16px 0;">
+      <div class="course-box" onclick="toggleCheck('course-educational')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
+        <input type="checkbox" id="course-educational" data-name="Educational Course" style="width: 22px; height: 22px; cursor: pointer; margin: 0; accent-color: #ff9500; pointer-events: none;">
+        <label for="course-educational" style="flex: 1; margin-left: 12px; cursor: pointer; font-weight: 600; color: #1f2937; font-size: clamp(14px, 1.9vw, 16px); font-family: 'Lato', sans-serif; pointer-events: none;">Educational Course</label>
+        <span style="font-weight: 700; color: #1e3a8a; font-size: clamp(15px, 2vw, 18px); pointer-events: none;">₹1000 / month</span>
+      </div>
+      <div class="course-box" onclick="toggleCheck('course-art')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
+        <input type="checkbox" id="course-art" data-name="Art" style="width: 22px; height: 22px; cursor: pointer; margin: 0; accent-color: #ff9500; pointer-events: none;">
+        <label for="course-art" style="flex: 1; margin-left: 12px; cursor: pointer; font-weight: 600; color: #1f2937; font-size: clamp(14px, 1.9vw, 16px); font-family: 'Lato', sans-serif; pointer-events: none;">Art</label>
+        <span style="font-weight: 700; color: #1e3a8a; font-size: clamp(15px, 2vw, 18px); pointer-events: none;">₹500 / month</span>
+      </div>
+      <div class="course-box" onclick="toggleCheck('course-taekwondo')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
+        <input type="checkbox" id="course-taekwondo" data-name="Taekwondo" style="width: 22px; height: 22px; cursor: pointer; margin: 0; accent-color: #ff9500; pointer-events: none;">
+        <label for="course-taekwondo" style="flex: 1; margin-left: 12px; cursor: pointer; font-weight: 600; color: #1f2937; font-size: clamp(14px, 1.9vw, 16px); font-family: 'Lato', sans-serif; pointer-events: none;">Taekwondo</label>
+        <span style="font-weight: 700; color: #1e3a8a; font-size: clamp(15px, 2vw, 18px); pointer-events: none;">₹500 / month</span>
+      </div>
+      <div class="course-box" onclick="toggleCheck('course-combo')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
+        <input type="checkbox" id="course-combo" data-name="Taekwondo + Art Combo" style="width: 22px; height: 22px; cursor: pointer; margin: 0; accent-color: #ff9500; pointer-events: none;">
+        <label for="course-combo" style="flex: 1; margin-left: 12px; cursor: pointer; font-weight: 600; color: #1f2937; font-size: clamp(14px, 1.9vw, 16px); font-family: 'Lato', sans-serif; pointer-events: none;">Both Taekwondo & Art</label>
+        <span style="font-weight: 700; color: #1e3a8a; font-size: clamp(15px, 2vw, 18px); pointer-events: none;">₹899 / month</span>
+      </div>
+      <div class="course-box" onclick="toggleCheck('course-all')" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: clamp(12px, 2vw, 16px); margin: 10px 0; border-radius: 10px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease;">
+        <input type="checkbox" id="course-all" data-name="All Classes" style="width: 22px; height: 22px; cursor: pointer; margin: 0; accent-color: #ff9500; pointer-events: none;">
+        <label for="course-all" style="flex: 1; margin-left: 12px; cursor: pointer; font-weight: 600; color: #1f2937; font-size: clamp(14px, 1.9vw, 16px); font-family: 'Lato', sans-serif; pointer-events: none;">All Classes</label>
+        <span style="font-weight: 700; color: #1e3a8a; font-size: clamp(15px, 2vw, 18px); pointer-events: none;">₹1699 / month</span>
+      </div>
     </div>
+    
+    <button onclick="submitEnroll()" style="background: #ff9500; color: #fff; border: none; padding: clamp(10px, 1.5vw, 14px) clamp(24px, 4vw, 36px); border-radius: 8px; cursor: pointer; font-size: clamp(14px, 1.8vw, 16px); font-weight: 700; margin-top: 12px; font-family: 'Lato', sans-serif; width: 100%;">Submit Enrollment</button>
   </div>
+</div>
+
+<script>
+function toggleCheck(id) {
+  const checkbox = document.getElementById(id);
+  checkbox.checked = !checkbox.checked;
+  
+  const box = checkbox.closest('.course-box');
+  if(checkbox.checked) {
+    box.style.borderColor = '#ff9500';
+    box.style.background = '#fff7ed';
+  } else {
+    box.style.borderColor = '#e5e7eb';
+    box.style.background = '#fff';
+  }
+}
+
+function submitEnroll() {
+  const name = document.getElementById('enrollName').value;
+  const phone = document.getElementById('enrollPhone').value;
+  const selected = document.querySelectorAll('input[type="checkbox"]:checked');
+  
+  if(!name || !phone) {
+    alert('Please enter your name and phone number');
+    return;
+  }
+  
+  if(selected.length === 0) {
+    alert('Please select at least one course');
+    return;
+  }
+  
+  let courses = [];
+  selected.forEach(cb => {
+    courses.push(cb.dataset.name);
+  });
+  
+  alert(`Thanks ${name}!\nCourses: ${courses.join(', ')}\nWe will contact you at ${phone}.`);
+  
+  document.getElementById('enrollName').value = '';
+  document.getElementById('enrollPhone').value = '';
+  selected.forEach(cb => {
+    cb.checked = false;
+    const box = cb.closest('.course-box');
+    box.style.borderColor = '#e5e7eb';
+    box.style.background = '#fff';
+  });
+}
+</script>
 
   <!-- Floating Social Buttons -->
   <div class="social-float">
