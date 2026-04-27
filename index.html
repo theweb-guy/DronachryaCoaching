@@ -333,23 +333,37 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
       <div class="gallery-wrapper">
         <button class="carousel-btn carousel-prev" onclick="scrollGallery(-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="gallery" id="galleryList">
-          <div class="student-card" onclick="openLightbox('sucsess.png')">
-            <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('3d.png')">
-            <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('4d.png')">
-            <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('ggg1.png')">
-            <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('ggg2.png')">
-            <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-        <button class="carousel-btn carousel-next" onclick="scrollGallery(1)"><i class="fas fa-chevron-right"></i></button>
-      </div>
+  <div class="student-card" onclick="openLightbox('std1.png')">
+    <img src="std1.png" alt="Student Achievement 1" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std2.png')">
+    <img src="std2.png" alt="Student Achievement 2" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std3.png')">
+    <img src="std3.png" alt="Student Achievement 3" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std4.png')">
+    <img src="std4.png" alt="Student Achievement 4" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std5.png')">
+    <img src="std5.png" alt="Student Achievement 5" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('sucsess.png')">
+    <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('3d.png')">
+    <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('4d.png')">
+    <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg1.png')">
+    <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+</div>
     </div>
   </div>
 
@@ -530,17 +544,19 @@ function submitEnroll() {
 
   <script>
     // Teachers data
-    let teachers = [
-      { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
-      { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
-      { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
-      { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
-      { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
-      { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
-      { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
-      { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
-      { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" }
-    ];
+   let teachers = [
+  { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
+  { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
+  { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
+  { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
+  { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
+  { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
+  { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
+  { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
+  { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" },
+  { name: "Divyani Martha", role: "Literature Specialist", img: "teach1.png" },
+  { name: "E. Gobinda Patro", role: "Literature Mentor", img: "teach2.png" }
+];
 
     let feedbacks = [];
     let isAdmin = false;
