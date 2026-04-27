@@ -12,23 +12,26 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-<script>
-  // Your Firebase config from Project Settings
+  // Your web app's Firebase configuration
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
+    apiKey: "AIzaSyCpiYdWFprVkjuTnBsS-EQMBwa5bO9cLgY",
     authDomain: "dronacharya-coaching-ebd32.firebaseapp.com",
     projectId: "dronacharya-coaching-ebd32",
-    storageBucket: "dronacharya-coaching-ebd32.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    storageBucket: "dronacharya-coaching-ebd32.firebasestorage.app",
+    messagingSenderId: "844512289323",
+    appId: "1:844512289323:web:32fe418420c9181e37406e"
   };
 
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+  const app = initializeApp(firebaseConfig);
 </script>
+
 
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Lato', sans-serif; }
@@ -351,49 +354,23 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
       <div class="gallery-wrapper">
         <button class="carousel-btn carousel-prev" onclick="scrollGallery(-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="gallery" id="galleryList">
-  <div class="student-card" onclick="openLightbox('std1.png')">
-    <img src="std1.png" alt="Student Achievement 1" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('std2.png')">
-    <img src="std2.png" alt="Student Achievement 2" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('std3.png')">
-    <img src="std3.png" alt="Student Achievement 3" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('std4.png')">
-    <img src="std4.png" alt="Student Achievement 4" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('std5.png')">
-    <img src="std5.png" alt="Student Achievement 5" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('sucsess.png')">
-    <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('3d.png')">
-    <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('4d.png')">
-    <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg1.png')">
-    <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg2.png')">
-    <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg2.png')">
-    <img src="std6.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg2.png')">
-    <img src="std7.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg2.png')">
-    <img src="std8.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-  <div class="student-card" onclick="openLightbox('ggg2.png')">
-    <img src="std9.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-  </div>
-</div>
+          <div class="student-card" onclick="openLightbox('sucsess.png')">
+            <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="student-card" onclick="openLightbox('3d.png')">
+            <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="student-card" onclick="openLightbox('4d.png')">
+            <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="student-card" onclick="openLightbox('ggg1.png')">
+            <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="student-card" onclick="openLightbox('ggg2.png')">
+            <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          </div>
+        <button class="carousel-btn carousel-next" onclick="scrollGallery(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
   </div>
 
@@ -416,16 +393,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Admin Panel -->
-<div class="section section-padding" id="adminPanel">
-  <h2>Admin Panel - Manage Teachers</h2>
-  <div class="form-box">
-    <h3>Add New Teacher</h3>
-    <input type="text" id="teacherName" placeholder="Teacher Name">
-    <input type="text" id="teacherRole" placeholder="Role/Subject">
-    <input type="file" id="teacherPhoto" accept="image/*">
-    <button onclick="addTeacherToFirebase()">Add Teacher</button>
+  <div class="section section-padding" id="adminPanel">
+    <h2>Admin Panel - Manage Teachers</h2>
+    <div class="form-box">
+      <h3>Add New Teacher</h3>
+      <input type="text" id="teacherName" placeholder="Teacher Name">
+      <input type="text" id="teacherRole" placeholder="Role/Subject">
+      <input type="text" id="teacherImg" placeholder="Image filename: math1.png">
+      <button onclick="addTeacher()">Add Teacher</button>
+    </div>
   </div>
-</div>
 
 
   <!-- About Us Section -->
@@ -574,21 +551,17 @@ function submitEnroll() {
 
   <script>
     // Teachers data
-   let teachers = [
-  { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
-  { name: "Sudhanshu Mallick", role: "Official Associate", img: "asso.png" },
-  { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
-  { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
-  { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
-  { name: "Divyani Martha", role: "Literature Specialist", img: "teach1.png" },
-  { name: "E. Gobinda Patro", role: "Literature Mentor", img: "teach2.png" },
-  { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
-  { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
-  { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
-  { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
-  { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" },
-
-];
+    let teachers = [
+      { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
+      { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
+      { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
+      { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
+      { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
+      { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
+      { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
+      { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
+      { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" }
+    ];
 
     let feedbacks = [];
     let isAdmin = false;
