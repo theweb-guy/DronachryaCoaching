@@ -46,16 +46,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 }
 .btn:hover { background: #fff; color: #0a0e1a; }
 
-/* Sections - REDUCED SPACING */
-.section { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 32px); max-width: 1400px; margin: 0 auto; }
-.section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); margin-bottom: clamp(8px, 1vw, 12px); font-weight: 800; color: #1e3a8a; }
+/* Sections - ZERO PADDING FOR VIDEO SECTIONS */
+.section { padding: 0; max-width: 1400px; margin: 0 auto; }
+.section h2 { text-align: center; font-size: clamp(26px, 4.5vw, 40px); padding: 15px 0 8px 0; margin: 0; font-weight: 800; color: #1e3a8a; background: #fff; }
 
-/* Achievements Gallery - MINIMAL PADDING */
+/* Achievements Gallery - FULL WIDTH VIDEO BG */
 .achievements-container {
   position: relative;
   border-radius: 0;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
 }
@@ -67,11 +67,11 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 }
 .achievement-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0.65); z-index: 1;
+  background: rgba(0, 0, 0, 0.65); z-index: 1;
 }
 .gallery-wrapper { 
   position: relative; 
-  padding: 8px 0; 
+  padding: 20px 0; 
   overflow: hidden;
   z-index: 2;
   max-width: 1400px;
@@ -82,7 +82,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   gap: clamp(16px, 3vw, 28px); 
   overflow-x: auto; 
   scroll-behavior: auto;
-  padding: 10px clamp(50px, 12vw, 150px);
+  padding: 20px clamp(50px, 12vw, 150px);
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
@@ -114,7 +114,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   border-radius: clamp(12px, 1.5vw, 16px);
 }
 
-/* Experts/Teachers - MINIMAL PADDING */
+/* Experts/Teachers - FULL WIDTH VIDEO BG */
 .experts-container {
   position: relative;
   border-radius: 0;
@@ -130,11 +130,11 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 }
 .experts-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0.65); z-index: 1;
+  background: rgba(0, 0, 0, 0.65); z-index: 1;
 }
 .teachers-wrapper { 
   position: relative; 
-  padding: 8px 0; 
+  padding: 20px 0; 
   overflow: hidden;
   z-index: 2;
   max-width: 1400px;
@@ -145,7 +145,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   gap: clamp(16px, 3vw, 28px); 
   overflow-x: auto; 
   scroll-behavior: auto;
-  padding: 10px clamp(50px, 12vw, 150px);
+  padding: 20px clamp(50px, 12vw, 150px);
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
@@ -158,7 +158,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   background: rgba(255,255,0.98); 
   border-radius: clamp(16px, 2vw, 24px); 
   overflow: hidden; 
-  box-shadow: 0 8px 25px rgba(0,0,0.3);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
   transition: none;
   user-select: none;
   will-change: transform, opacity;
@@ -174,13 +174,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 .teacher-card h3 { font-size: clamp(17px, 2.4vw, 21px); font-weight: 700; margin-bottom: 6px; color: #111827; }
 .teacher-card p { color: #d63384; font-size: clamp(14px, 1.9vw, 16px); font-weight: 600; }
 
+/* Other sections keep normal padding */
+.section-padding { padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px); }
+
 /* Carousel Controls */
 .carousel-btn {
   position: absolute; top: 50%; transform: translateY(-50%);
   background: #ff9500; color: #fff; border: none;
   width: clamp(42px, 6vw, 56px); height: clamp(42px, 6vw, 56px); border-radius: 50%;
   font-size: clamp(18px, 2.8vw, 24px); cursor: pointer; z-index: 10;
-  box-shadow: 0 8px 20px rgba(0,0,0.25); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;
   transition: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .carousel-btn:hover { background: #e88500; transform: translateY(-50%) scale(1.12); }
@@ -199,7 +202,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   z-index: 9999;
   left: 0; top: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.95);
+  background: rgba(0,0,0.95);
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s;
@@ -220,7 +223,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   font-size: clamp(30px, 5vw, 45px);
   color: #fff;
   cursor: pointer;
-  background: rgba(255,255,0.1);
+  background: rgba(255,255,255,0.1);
   width: clamp(45px, 7vw, 60px);
   height: clamp(45px, 7vw, 60px);
   border-radius: 50%;
@@ -229,7 +232,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   justify-content: center;
   transition: 0.3s;
 }
-.lightbox-close:hover { background: rgba(255,255,0.2); transform: rotate(90deg); }
+.lightbox-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -256,7 +259,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
 /* Feedback Display */
 .feedback-item { 
   background: #fff; padding: clamp(16px, 2.5vw, 24px); border-radius: 12px; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 16px 0; 
+  box-shadow: 0 2px 8px rgba(0,0,0.1); margin: 16px 0; 
 }
 .feedback-item h4 { color: #1e3c72; margin-bottom: 8px; font-size: clamp(16px, 2vw, 18px); font-weight: 700; }
 .feedback-item p { font-size: clamp(14px, 1.8vw, 16px); color: #374151; }
@@ -369,7 +372,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Admin Panel -->
-  <div class="section" id="adminPanel">
+  <div class="section section-padding" id="adminPanel">
     <h2>Admin Panel - Manage Teachers</h2>
     <div class="form-box">
       <h3>Add New Teacher</h3>
@@ -381,7 +384,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Student Feedback -->
-  <div class="section">
+  <div class="section section-padding">
     <h2>Student Feedback</h2>
     <div class="form-box">
       <h3>Share Your Experience</h3>
@@ -393,7 +396,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Enroll -->
-  <div class="section" id="enroll">
+  <div class="section section-padding" id="enroll">
     <h2>Enroll Now</h2>
     <div class="form-box">
       <input type="text" id="enrollName" placeholder="Student Name">
