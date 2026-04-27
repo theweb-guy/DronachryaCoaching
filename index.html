@@ -12,26 +12,298 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
+<script>
+  // ===== FIREBASE CONFIG - REPLACE WITH YOUR KEYS =====
   const firebaseConfig = {
-    apiKey: "AIzaSyCpiYdWFprVkjuTnBsS-EQMBwa5bO9cLgY",
+    apiKey: "YOUR_API_KEY",
     authDomain: "dronacharya-coaching-ebd32.firebaseapp.com",
     projectId: "dronacharya-coaching-ebd32",
-    storageBucket: "dronacharya-coaching-ebd32.firebasestorage.app",
-    messagingSenderId: "844512289323",
-    appId: "1:844512289323:web:32fe418420c9181e37406e"
+    storageBucket: "dronacharya-coaching-ebd32.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  let teachers = [];
+  let achievements = [];
+  let feedbacks = [];
+  let isAdmin = false;
+  let tickingTeachers = false;
+  let tickingGallery = false;
+
+  // ===== TEACHERS =====
+  async function loadTeachersFromFirebase() {
+    try {
+      const snapshot = await db.collection('teachers').orderBy('timestamp', 'desc').get();
+      teachers = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
+      renderTeachers();
+    } catch(e) { console.log('No teachers yet'); renderTeachers(); }
+  }
+
+  async function addTeacherToFirebase() {
+    if(!isAdmin) return alert('Admin only');
+    const name = document.getElementById('teacherName').value.trim();
+    const role = document.getElementById('teacherRole').value.trim();
+    const file = document.getElementById('teacherPhoto').files[0];
+
+    if(!name ||!role ||!file) return alert('Fill all fields and select photo');
+
+    try {
+      const fileRef = storage.ref('teachers/' + Date.now() + '_' + file.name);
+      await fileRef.put(file);
+      const photoURL = await fileRef.getDownloadURL();
+
+      await db.collection('teachers').add({
+        name, role, img: photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Teacher added!');
+      document.getElementById('teacherName').value = '';
+      document.getElementById('teacherRole').value = '';
+      document.getElementById('teacherPhoto').value = '';
+      loadTeachersFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  async function removeTeacherFirebase(id, imgUrl) {
+    if(!isAdmin ||!confirm('Remove this teacher?')) return;
+    try {
+      await db.collection('teachers').doc(id).delete();
+      if(imgUrl.includes('firebase')) await storage.refFromURL(imgUrl).delete();
+      loadTeachersFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  function renderTeachers() {
+    const list = document.getElementById('teachersList');
+    list.innerHTML = '';
+    teachers.forEach((t) => {
+      list.innerHTML += `
+        <div class="teacher-card" onclick="openLightbox('${t.img}')">
+          <img src="${t.img}" alt="${t.name}">
+          <div class="teacher-info">
+            <h3>${t.name}</h3>
+            <p>${t.role}</p>
+          </div>
+          ${isAdmin? `<div class="admin-controls"><button onclick="event.stopPropagation(); removeTeacherFirebase('${t.id}','${t.img}')">Remove</button></div>` : ''}
+        </div>`;
+    });
+    setTimeout(() => { updateScale('teachers'); }, 50);
+  }
+
+  // ===== FEEDBACKS =====
+  async function submitFeedback() {
+    const name = document.getElementById('fbName').value.trim();
+    const text = document.getElementById('fbText').value.trim();
+    if(!name ||!text) return alert('Fill all fields');
+
+    try {
+      await db.collection('feedbacks').add({
+        name, text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      document.getElementById('fbName').value = '';
+      document.getElementById('fbText').value = '';
+      alert('Thanks for your feedback!');
+      loadFeedbacksFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  async function loadFeedbacksFromFirebase() {
+    try {
+      const snapshot = await db.collection('feedbacks').orderBy('timestamp', 'desc').get();
+      feedbacks = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
+      renderFeedback();
+    } catch(e) { console.log('No feedbacks yet'); renderFeedback(); }
+  }
+
+  function renderFeedback() {
+    const list = document.getElementById('feedbackList');
+    list.innerHTML = feedbacks.map(f => `
+      <div class="feedback-item">
+        <h4>${f.name}</h4>
+        <p>${f.text}</p>
+        ${isAdmin? `<button onclick="removeFeedback('${f.id}')" style="background:#dc3545;color:#fff;border:none;padding:6px 12px;border-radius:4px;margin-top:8px;cursor:pointer;">Delete</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  async function removeFeedback(id) {
+    if(!isAdmin ||!confirm('Delete this feedback?')) return;
+    try {
+      await db.collection('feedbacks').doc(id).delete();
+      loadFeedbacksFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ===== CAROUSEL & UI =====
+  function updateScale(containerId) {
+    const container = document.getElementById(containerId === 'teachers'? 'teachersList' : 'galleryList');
+    const cards = container.querySelectorAll(containerId === 'teachers'? '.teacher-card' : '.student-card');
+    if (!cards.length) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
+
+    cards.forEach((card) => {
+      const cardRect = card.getBoundingClientRect();
+      const cardCenter = cardRect.left + cardRect.width / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      const maxDistance = containerRect.width * 0.6;
+      const normalizedDistance = Math.min(distance / maxDistance, 1);
+      const easedDistance = normalizedDistance * normalizedDistance;
+      const scale = 1.15 - (easedDistance * 0.35);
+      const opacity = 1 - (easedDistance * 0.55);
+      const blur = easedDistance * 1.2;
+
+      card.style.transform = `scale(${scale})`;
+      card.style.opacity = Math.max(0.45, opacity);
+      card.style.filter = `blur(${blur}px)`;
+      card.style.zIndex = Math.round((1 - normalizedDistance) * 10);
+    });
+
+    if (containerId === 'teachers') tickingTeachers = false;
+    else tickingGallery = false;
+  }
+
+  function requestTick(containerId) {
+    if (containerId === 'teachers' &&!tickingTeachers) {
+      requestAnimationFrame(() => updateScale('teachers'));
+      tickingTeachers = true;
+    } else if (containerId === 'gallery' &&!tickingGallery) {
+      requestAnimationFrame(() => updateScale('gallery'));
+      tickingGallery = true;
+    }
+  }
+
+  function scrollTeachers(direction) {
+    const container = document.getElementById('teachersList');
+    const card = container.querySelector('.teacher-card');
+    if (!card) return;
+    const gap = parseFloat(getComputedStyle(container).gap) || 28;
+    const cardWidth = card.offsetWidth + gap;
+    container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+  }
+
+  function scrollGallery(direction) {
+    const container = document.getElementById('galleryList');
+    const card = container.querySelector('.student-card');
+    if (!card) return;
+    const gap = parseFloat(getComputedStyle(container).gap) || 28;
+    const cardWidth = card.offsetWidth + gap;
+    container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+  }
+
+  const teachersContainer = document.getElementById('teachersList');
+  const galleryContainer = document.getElementById('galleryList');
+
+  teachersContainer.addEventListener('scroll', () => requestTick('teachers'), { passive: true });
+  galleryContainer.addEventListener('scroll', () => requestTick('gallery'), { passive: true });
+
+  function setupDragScroll(container) {
+    let isDown = false, startX, scrollLeft;
+    container.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - container.offsetLeft; scrollLeft = container.scrollLeft; });
+    container.addEventListener('mouseleave', () => { isDown = false; });
+    container.addEventListener('mouseup', () => { isDown = false; });
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 2;
+      container.scrollLeft = scrollLeft - walk;
+    });
+  }
+
+  setupDragScroll(teachersContainer);
+  setupDragScroll(galleryContainer);
+
+  function openLightbox(imgSrc) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    lightboxImg.src = imgSrc;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+  window.addEventListener('resize', () => {
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(() => { updateScale('teachers'); updateScale('gallery'); }, 150);
+  });
+
+  function toggleAdmin() {
+    if(!isAdmin) {
+      const pass = prompt('Enter admin password:');
+      if(pass === 'drona2019acharya') {
+        isAdmin = true;
+        document.getElementById('adminPanel').style.display = 'block';
+        renderTeachers();
+        renderFeedback();
+        alert('Admin mode activated');
+      } else if(pass) {
+        alert('Wrong password');
+      }
+    }
+  }
+
+  function submitEnroll() {
+    const name = document.getElementById('enrollName').value;
+    const phone = document.getElementById('enrollPhone').value;
+    const cls = document.getElementById('enrollClass').value;
+    if(name && phone) {
+      alert(`Thanks ${name}! We will contact you at ${phone} for ${cls} enrollment.`);
+      document.getElementById('enrollName').value = '';
+      document.getElementById('enrollPhone').value = '';
+    }
+  }
+
+  const bg5Video = document.getElementById('bg5Video');
+  const achievementsSection = document.getElementById('achievementsSection');
+  const dvdoVideo = document.getElementById('dvdoVideo');
+  const expertsSection = document.getElementById('expertsSection');
+
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target.querySelector('video');
+      if (!video) return;
+      if (entry.isIntersecting) video.play().catch(e => console.log('Video play prevented:', e));
+      else video.pause();
+    });
+  }, { threshold: 0.3 });
+
+  videoObserver.observe(achievementsSection);
+  videoObserver.observe(expertsSection);
+
+  // ===== INIT - Load everything from Firebase =====
+  loadTeachersFromFirebase();
+  loadFeedbacksFromFirebase();
 </script>
 
+
+<<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "dronacharya-coaching-ebd32.firebaseapp.com",
+    projectId: "dronacharya-coaching-ebd32",
+    storageBucket: "dronacharya-coaching-ebd32.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Lato', sans-serif; }
@@ -354,23 +626,49 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
       <div class="gallery-wrapper">
         <button class="carousel-btn carousel-prev" onclick="scrollGallery(-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="gallery" id="galleryList">
-          <div class="student-card" onclick="openLightbox('sucsess.png')">
-            <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('3d.png')">
-            <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('4d.png')">
-            <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('ggg1.png')">
-            <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-          <div class="student-card" onclick="openLightbox('ggg2.png')">
-            <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
-          </div>
-        <button class="carousel-btn carousel-next" onclick="scrollGallery(1)"><i class="fas fa-chevron-right"></i></button>
-      </div>
+  <div class="student-card" onclick="openLightbox('std1.png')">
+    <img src="std1.png" alt="Student Achievement 1" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std2.png')">
+    <img src="std2.png" alt="Student Achievement 2" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std3.png')">
+    <img src="std3.png" alt="Student Achievement 3" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std4.png')">
+    <img src="std4.png" alt="Student Achievement 4" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('std5.png')">
+    <img src="std5.png" alt="Student Achievement 5" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('sucsess.png')">
+    <img src="sucsess.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('3d.png')">
+    <img src="3d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('4d.png')">
+    <img src="4d.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg1.png')">
+    <img src="ggg1.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="ggg2.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="std6.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="std7.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="std8.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="student-card" onclick="openLightbox('ggg2.png')">
+    <img src="std9.png" alt="Achievement" onerror="this.parentElement.style.display='none'">
+  </div>
+</div>
     </div>
   </div>
 
@@ -393,16 +691,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #111827; 
   </div>
 
   <!-- Admin Panel -->
-  <div class="section section-padding" id="adminPanel">
-    <h2>Admin Panel - Manage Teachers</h2>
-    <div class="form-box">
-      <h3>Add New Teacher</h3>
-      <input type="text" id="teacherName" placeholder="Teacher Name">
-      <input type="text" id="teacherRole" placeholder="Role/Subject">
-      <input type="text" id="teacherImg" placeholder="Image filename: math1.png">
-      <button onclick="addTeacher()">Add Teacher</button>
-    </div>
+<div class="section section-padding" id="adminPanel">
+  <h2>Admin Panel - Manage Teachers</h2>
+  <div class="form-box">
+    <h3>Add New Teacher</h3>
+    <input type="text" id="teacherName" placeholder="Teacher Name">
+    <input type="text" id="teacherRole" placeholder="Role/Subject">
+    <input type="file" id="teacherPhoto" accept="image/*">
+    <button onclick="addTeacherToFirebase()">Add Teacher</button>
   </div>
+</div>
 
 
   <!-- About Us Section -->
@@ -551,17 +849,21 @@ function submitEnroll() {
 
   <script>
     // Teachers data
-    let teachers = [
-      { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
-      { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
-      { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
-      { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
-      { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
-      { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
-      { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
-      { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
-      { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" }
-    ];
+   let teachers = [
+  { name: "Mr. Sameer Kumar Sahu", role: "Management Director, M.Sc Zoology", img: "science.png" },
+  { name: "Sudhanshu Mallick", role: "Official Associate", img: "asso.png" },
+  { name: "Satyanarayan Panda", role: "Mathematics Specialist", img: "math1.png" },
+  { name: "Deepak Kumar Badatya", role: "Mathematics", img: "math2.png" },
+  { name: "Akash Kumar Jena", role: "Mathematics Specialist", img: "math3.png" },
+  { name: "Divyani Martha", role: "Literature Specialist", img: "teach1.png" },
+  { name: "E. Gobinda Patro", role: "Literature Mentor", img: "teach2.png" },
+  { name: "Swarnalata Panda", role: "Social Study Instructor", img: "litsocial.png" },
+  { name: "Biswaranjan Behera", role: "Social Science Specialist", img: "soial.png" },
+  { name: "Sarathi Pollai", role: "Art Teacher", img: "art.png" },
+  { name: "Babu Gouda", role: "Physical Education Teacher", img: "pt.png" },
+  { name: "Mr. Pranakrushna", role: "Taekwondo Specialist, Black Belt Master", img: "taek.png" },
+
+];
 
     let feedbacks = [];
     let isAdmin = false;
