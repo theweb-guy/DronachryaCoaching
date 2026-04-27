@@ -34,15 +34,14 @@
   let tickingTeachers = false;
   let tickingGallery = false;
 
-  // ===== TEACHERS =====
+  // ===== TEACHERS: Load from Firebase =====
   async function loadTeachersFromFirebase() {
-    try {
-      const snapshot = await db.collection('teachers').orderBy('timestamp', 'desc').get();
-      teachers = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
-      renderTeachers();
-    } catch(e) { console.log('No teachers yet'); renderTeachers(); }
+    const snapshot = await db.collection('teachers').orderBy('timestamp', 'desc').get();
+    teachers = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
+    renderTeachers();
   }
 
+  // ===== TEACHERS: Add to Firebase =====
   async function addTeacherToFirebase() {
     if(!isAdmin) return alert('Admin only');
     const name = document.getElementById('teacherName').value.trim();
@@ -69,6 +68,7 @@
     } catch(e) { alert('Error: ' + e.message); }
   }
 
+  // ===== TEACHERS: Remove from Firebase =====
   async function removeTeacherFirebase(id, imgUrl) {
     if(!isAdmin ||!confirm('Remove this teacher?')) return;
     try {
@@ -78,24 +78,46 @@
     } catch(e) { alert('Error: ' + e.message); }
   }
 
-  function renderTeachers() {
-    const list = document.getElementById('teachersList');
-    list.innerHTML = '';
-    teachers.forEach((t) => {
-      list.innerHTML += `
-        <div class="teacher-card" onclick="openLightbox('${t.img}')">
-          <img src="${t.img}" alt="${t.name}">
-          <div class="teacher-info">
-            <h3>${t.name}</h3>
-            <p>${t.role}</p>
-          </div>
-          ${isAdmin? `<div class="admin-controls"><button onclick="event.stopPropagation(); removeTeacherFirebase('${t.id}','${t.img}')">Remove</button></div>` : ''}
-        </div>`;
-    });
-    setTimeout(() => { updateScale('teachers'); }, 50);
+  // ===== ACHIEVEMENTS: Load from Firebase =====
+  async function loadAchievementsFromFirebase() {
+    const snapshot = await db.collection('achievements').orderBy('timestamp', 'desc').get();
+    achievements = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
+    renderAchievements();
   }
 
-  // ===== FEEDBACKS =====
+  // ===== ACHIEVEMENTS: Add to Firebase =====
+  async function addAchievementToFirebase() {
+    if(!isAdmin) return alert('Admin only');
+    const file = document.getElementById('achievementPhoto').files[0];
+    if(!file) return alert('Select a photo');
+
+    try {
+      const fileRef = storage.ref('achievements/' + Date.now() + '_' + file.name);
+      await fileRef.put(file);
+      const photoURL = await fileRef.getDownloadURL();
+
+      await db.collection('achievements').add({
+        img: photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Achievement added!');
+      document.getElementById('achievementPhoto').value = '';
+      loadAchievementsFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ===== ACHIEVEMENTS: Remove from Firebase =====
+  async function removeAchievementFirebase(id, imgUrl) {
+    if(!isAdmin ||!confirm('Remove this photo?')) return;
+    try {
+      await db.collection('achievements').doc(id).delete();
+      if(imgUrl.includes('firebase')) await storage.refFromURL(imgUrl).delete();
+      loadAchievementsFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ===== FEEDBACKS: Save to Firebase =====
   async function submitFeedback() {
     const name = document.getElementById('fbName').value.trim();
     const text = document.getElementById('fbText').value.trim();
@@ -113,12 +135,51 @@
     } catch(e) { alert('Error: ' + e.message); }
   }
 
+  // ===== FEEDBACKS: Load from Firebase =====
   async function loadFeedbacksFromFirebase() {
+    const snapshot = await db.collection('feedbacks').orderBy('timestamp', 'desc').get();
+    feedbacks = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
+    renderFeedback();
+  }
+
+  // ===== FEEDBACKS: Delete by Admin =====
+  async function removeFeedback(id) {
+    if(!isAdmin ||!confirm('Delete this feedback?')) return;
     try {
-      const snapshot = await db.collection('feedbacks').orderBy('timestamp', 'desc').get();
-      feedbacks = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
-      renderFeedback();
-    } catch(e) { console.log('No feedbacks yet'); renderFeedback(); }
+      await db.collection('feedbacks').doc(id).delete();
+      loadFeedbacksFromFirebase();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
+  // ===== RENDER FUNCTIONS =====
+  function renderTeachers() {
+    const list = document.getElementById('teachersList');
+    list.innerHTML = '';
+    teachers.forEach((t) => {
+      list.innerHTML += `
+        <div class="teacher-card" onclick="openLightbox('${t.img}')">
+          <img src="${t.img}" alt="${t.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22%3E%3Crect fill=%22%23f0f0%22 width=%22200%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+          <div class="teacher-info">
+            <h3>${t.name}</h3>
+            <p>${t.role}</p>
+          </div>
+          ${isAdmin? `<div class="admin-controls"><button onclick="event.stopPropagation(); removeTeacherFirebase('${t.id}','${t.img}')">Remove</button></div>` : ''}
+        </div>`;
+    });
+    setTimeout(() => { updateScale('teachers'); }, 50);
+  }
+
+  function renderAchievements() {
+    const list = document.getElementById('galleryList');
+    list.innerHTML = '';
+    achievements.forEach((a) => {
+      list.innerHTML += `
+        <div class="student-card" onclick="openLightbox('${a.img}')">
+          <img src="${a.img}" alt="Achievement" onerror="this.parentElement.style.display='none'">
+          ${isAdmin? `<div class="admin-controls"><button onclick="event.stopPropagation(); removeAchievementFirebase('${a.id}','${a.img}')">Remove</button></div>` : ''}
+        </div>`;
+    });
+    setTimeout(() => { updateScale('gallery'); }, 50);
   }
 
   function renderFeedback() {
@@ -132,15 +193,22 @@
     `).join('');
   }
 
-  async function removeFeedback(id) {
-    if(!isAdmin ||!confirm('Delete this feedback?')) return;
-    try {
-      await db.collection('feedbacks').doc(id).delete();
-      loadFeedbacksFromFirebase();
-    } catch(e) { alert('Error: ' + e.message); }
+  function toggleAdmin() {
+    if(!isAdmin) {
+      const pass = prompt('Enter admin password:');
+      if(pass === 'drona2019acharya') {
+        isAdmin = true;
+        document.getElementById('adminPanel').style.display = 'block';
+        renderTeachers();
+        renderAchievements();
+        renderFeedback();
+        alert('Admin mode activated');
+      } else if(pass) {
+        alert('Wrong password');
+      }
+    }
   }
 
-  // ===== CAROUSEL & UI =====
   function updateScale(containerId) {
     const container = document.getElementById(containerId === 'teachers'? 'teachersList' : 'galleryList');
     const cards = container.querySelectorAll(containerId === 'teachers'? '.teacher-card' : '.student-card');
@@ -242,21 +310,6 @@
     window.resizeTimer = setTimeout(() => { updateScale('teachers'); updateScale('gallery'); }, 150);
   });
 
-  function toggleAdmin() {
-    if(!isAdmin) {
-      const pass = prompt('Enter admin password:');
-      if(pass === 'drona2019acharya') {
-        isAdmin = true;
-        document.getElementById('adminPanel').style.display = 'block';
-        renderTeachers();
-        renderFeedback();
-        alert('Admin mode activated');
-      } else if(pass) {
-        alert('Wrong password');
-      }
-    }
-  }
-
   function submitEnroll() {
     const name = document.getElementById('enrollName').value;
     const phone = document.getElementById('enrollPhone').value;
@@ -285,13 +338,14 @@
   videoObserver.observe(achievementsSection);
   videoObserver.observe(expertsSection);
 
-  // ===== INIT - Load everything from Firebase =====
+  // ===== INIT - Load everything from Firebase on page load =====
   loadTeachersFromFirebase();
+  loadAchievementsFromFirebase();
   loadFeedbacksFromFirebase();
 </script>
 
-
-<<script>
+<script>
+  // Your Firebase config from Project Settings
   const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "dronacharya-coaching-ebd32.firebaseapp.com",
@@ -301,8 +355,10 @@
     appId: "YOUR_APP_ID"
   };
 
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  const storage = firebase.storage();
 </script>
 
 <style>
